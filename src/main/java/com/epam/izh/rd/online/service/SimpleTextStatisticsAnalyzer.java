@@ -3,8 +3,9 @@ package com.epam.izh.rd.online.service;
 import com.epam.izh.rd.online.helper.Direction;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static java.util.Collections.*;
 
 /**
  * Совет:
@@ -23,7 +24,11 @@ public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
      */
     @Override
     public int countSumLengthOfWords(String text) {
-        return 0;
+        int sumLength = 0;
+        for (String word : getWords(text)) {
+            sumLength+=word.length();
+        }
+        return sumLength;
     }
 
     /**
@@ -34,7 +39,7 @@ public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
      */
     @Override
     public int countNumberOfWords(String text) {
-        return 0;
+        return getWords(text).size();
     }
 
     /**
@@ -44,7 +49,7 @@ public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
      */
     @Override
     public int countNumberOfUniqueWords(String text) {
-        return 0;
+        return getUniqueWords(text).size();
     }
 
     /**
@@ -57,7 +62,14 @@ public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
      */
     @Override
     public List<String> getWords(String text) {
-        return emptyList();
+        List<String> listOfWords = new ArrayList<>();
+//  учитывает слова, которые пишутся через дефис, например, father-in-law
+        Pattern pattern = Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)");
+        Matcher matcher = pattern.matcher(text);
+        while (matcher.find()) {
+            listOfWords.add(matcher.group());
+        }
+        return listOfWords;
     }
 
     /**
@@ -70,7 +82,13 @@ public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
      */
     @Override
     public Set<String> getUniqueWords(String text) {
-        return emptySet();
+        Set<String> setOfUniqueWords = new HashSet<>();
+        Pattern pattern = Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)");
+        Matcher matcher = pattern.matcher(text);
+        while (matcher.find()) {
+            setOfUniqueWords.add(matcher.group());
+        }
+        return setOfUniqueWords;
     }
 
     /**
@@ -82,9 +100,20 @@ public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
      */
     @Override
     public Map<String, Integer> countNumberOfWordsRepetitions(String text) {
-        return emptyMap();
+        Map<String, Integer> mapWithWordsAndRepetitions = new HashMap<>();
+        for (String word : getWords(text)) {
+            if (!mapWithWordsAndRepetitions.containsKey(word)) {
+                mapWithWordsAndRepetitions.put(word,1);
+            }
+            else {
+                Integer previousNumberOfRepetitions = mapWithWordsAndRepetitions.get(word);
+                mapWithWordsAndRepetitions.put(word,++previousNumberOfRepetitions);
+            }
+        }
+        return mapWithWordsAndRepetitions;
     }
 
+//    В примере ниже ASC и DESC перепутаны местами:
     /**
      * Необходимо реализовать функционал вывода слов из текста в отсортированном виде (по длине) в зависимости от параметра direction.
      * Например для текста "Hello, Hi, mother, father - good, cat, c!!" должны вернуться результаты :
@@ -95,6 +124,17 @@ public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
      */
     @Override
     public List<String> sortWordsByLength(String text, Direction direction) {
-        return emptyList();
+        List<String> listOfWords = new ArrayList<>(getWords(text));
+        listOfWords.sort((o1, o2) -> {
+            switch (direction) {
+                case ASC:
+                    return o1.length() - o2.length();
+                case DESC:
+                    return o2.length() - o1.length();
+                default:
+                    return 0;
+            }
+        });
+        return listOfWords;
     }
 }
