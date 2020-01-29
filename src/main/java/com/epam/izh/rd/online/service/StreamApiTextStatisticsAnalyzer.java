@@ -2,7 +2,10 @@ package com.epam.izh.rd.online.service;
 
 import com.epam.izh.rd.online.helper.Direction;
 
-import java.util.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -12,6 +15,8 @@ import java.util.stream.Collectors;
  * {@link SimpleTextStatisticsAnalyzer}.
  */
 public class StreamApiTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
+    private static Pattern pattern = Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)");
+
     @Override
     public int countSumLengthOfWords(String text) {
         return getWords(text).stream().mapToInt(word->word.length()).sum();
@@ -19,7 +24,7 @@ public class StreamApiTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
 
     @Override
     public int countNumberOfWords(String text) {
-        return (int) Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)").matcher(text).
+        return (int) pattern.matcher(text).
                 results().count();
     }
 
@@ -30,7 +35,7 @@ public class StreamApiTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
 
     @Override
     public List<String> getWords(String text) {
-        return Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)").matcher(text)
+        return pattern.matcher(text)
                 .results()
                 .map(matcher -> matcher.group())
                 .collect(Collectors.toList());
@@ -39,7 +44,7 @@ public class StreamApiTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
 //   чтобы использовать метод results(), изменил версию Java на 1.9 в файле pom.xml
     @Override
     public Set<String> getUniqueWords(String text) {
-        return Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)").matcher(text)
+        return pattern.matcher(text)
                 .results()
                 .map(matcher -> matcher.group())
                 .collect(Collectors.toSet());
@@ -47,7 +52,7 @@ public class StreamApiTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
 
     @Override
     public Map<String, Integer> countNumberOfWordsRepetitions(String text) {
-        return Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)").matcher(text)
+        return pattern.matcher(text)
                 .results()
                 .collect(Collectors.toMap(match -> match.group(), value -> 1, (value,otherValue) -> (value + otherValue)));
     }

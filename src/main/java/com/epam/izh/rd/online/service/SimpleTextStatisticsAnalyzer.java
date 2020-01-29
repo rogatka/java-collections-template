@@ -2,7 +2,12 @@ package com.epam.izh.rd.online.service;
 
 import com.epam.izh.rd.online.helper.Direction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +20,7 @@ import java.util.regex.Pattern;
  * При необходимости, можно создать внутри данного класса дополнительные вспомогательные приватные методы.
  */
 public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
+    private static Pattern pattern = Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)");
 
     /**
      * Необходимо реализовать функционал подсчета суммарной длины всех слов (пробелы, знаким препинания итд не считаются).
@@ -64,7 +70,6 @@ public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
     public List<String> getWords(String text) {
         List<String> listOfWords = new ArrayList<>();
 //  учитывает слова, которые пишутся через дефис, например, father-in-law
-        Pattern pattern = Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)");
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             listOfWords.add(matcher.group());
@@ -83,7 +88,6 @@ public class SimpleTextStatisticsAnalyzer implements TextStatisticsAnalyzer {
     @Override
     public Set<String> getUniqueWords(String text) {
         Set<String> setOfUniqueWords = new HashSet<>();
-        Pattern pattern = Pattern.compile("([A-z]+(-[A-z]+(-[A-z])?)?)");
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             setOfUniqueWords.add(matcher.group());
